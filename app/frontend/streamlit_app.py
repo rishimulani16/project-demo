@@ -2,8 +2,8 @@ import streamlit as st
 import sys
 import os
 
-# ── path setup so app.* imports work when running from the project root ──────
-sys.path.insert(0, os.path.dirname(__file__))
+# ── path setup so app.* imports work inside Docker ───────────────────────────
+sys.path.insert(0, "/app")
 
 # ── page config (must be first Streamlit call) ───────────────────────────────
 st.set_page_config(
@@ -17,20 +17,17 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* ---------- global ---------- */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
     }
 
-    /* gradient background */
     .stApp {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         min-height: 100vh;
     }
 
-    /* ---------- sidebar ---------- */
     [data-testid="stSidebar"] {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(16px);
@@ -40,7 +37,6 @@ st.markdown(
         color: #e2e8f0 !important;
     }
 
-    /* ---------- main header ---------- */
     .hero-header {
         text-align: center;
         padding: 2rem 0 1.5rem;
@@ -59,7 +55,6 @@ st.markdown(
         margin-top: 0.4rem;
     }
 
-    /* ---------- chat bubbles ---------- */
     .chat-user {
         display: flex;
         justify-content: flex-end;
@@ -106,7 +101,6 @@ st.markdown(
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    /* ---------- context expander ---------- */
     .context-box {
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.09);
@@ -119,7 +113,6 @@ st.markdown(
         line-height: 1.5;
     }
 
-    /* ---------- input bar ---------- */
     .stChatInputContainer {
         background: rgba(255, 255, 255, 0.05) !important;
         border-top: 1px solid rgba(255,255,255,0.1) !important;
@@ -131,12 +124,10 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.15) !important;
     }
 
-    /* ---------- divider ---------- */
     hr {
         border-color: rgba(255, 255, 255, 0.08) !important;
     }
 
-    /* ---------- status badge ---------- */
     .status-badge {
         display: inline-block;
         background: rgba(52, 211, 153, 0.15);
@@ -149,7 +140,6 @@ st.markdown(
         margin-top: 0.3rem;
     }
 
-    /* ---------- metric cards ---------- */
     .metric-card {
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.1);
@@ -239,7 +229,7 @@ if "contexts" not in st.session_state:
 if "engine_loaded" not in st.session_state:
     st.session_state["engine_loaded"] = False
 
-# load engine (shows a spinner in the main area on first load)
+# load engine
 if not st.session_state["engine_loaded"]:
     with st.spinner("⚙️  Loading knowledge base… this may take a moment on first run."):
         engine = load_engine()
@@ -278,17 +268,14 @@ prefill = st.session_state.pop("prefill", None)
 prompt = st.chat_input("Ask a question about your document…") or prefill
 
 if prompt:
-    # append user message
     st.session_state["messages"].append({"role": "user", "content": prompt})
     st.markdown(
         f'<div class="chat-user"><div class="bubble">{prompt}</div></div>',
         unsafe_allow_html=True,
     )
 
-    # generate answer
     with st.spinner("🔍 Searching knowledge base and generating answer…"):
         try:
-            # retrieve contexts separately so we can display them
             contexts = engine.vector_store.search(prompt, k=3)
             answer = engine.generate_answer(prompt)
         except Exception as e:
@@ -298,7 +285,6 @@ if prompt:
     st.session_state["contexts"].append(contexts)
     st.session_state["messages"].append({"role": "assistant", "content": answer})
 
-    # display assistant bubble
     st.markdown(
         f'<div class="chat-assistant">'
         f'<div class="avatar">🤖</div>'
