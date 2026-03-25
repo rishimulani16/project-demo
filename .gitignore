@@ -1,2 +1,7 @@
 .env
 myvenv/
+myvenv
+myvenv/*
+.history/
+*/__pycache__/*
+__pycache__

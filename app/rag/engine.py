@@ -31,7 +31,7 @@ class RAGEngine:
 
         self.vector_store.build(chunks)
 
-        self.llm=ChatGroq(model_name = 'llama-3.3-70b-versatile')
+        self.llm=ChatGroq(model = 'llama-3.3-70b-versatile')
 
     def generate_answer(self, question:str):
         """
@@ -51,15 +51,15 @@ class RAGEngine:
 
             answer:
             """
-    agent=create_agent(
-        model=self.llm,
-        system_prompt="You are a helpful assistant"
-    )
+        agent=create_agent(
+            model=self.llm,
+            system_prompt="You are a helpful assistant"
+        )
 
-    result=agent.invoke({
-        "messages":[
-            {"role":"user", "content":prompt_template}
-        ]
-    }) 
+        result=agent.invoke({
+            "messages":[
+                {"role":"user", "content":prompt_template}
+            ]
+        }) 
 
-    return result['messages'][-1].content       
+        return result['messages'][-1].content       

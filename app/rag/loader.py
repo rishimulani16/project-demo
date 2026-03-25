@@ -3,7 +3,7 @@ from pathlib import Path
 
 class PDFLoader:
     """Used only for loading PDF files"""
-    def __int__(self, pdf_path: Path):
+    def __init__(self, pdf_path: Path):
         if not pdf_path.exists():
             raise FileNotFoundError(f"PDF file not found at {pdf_path}")
         self.pdf_path = pdf_path
