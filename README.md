@@ -247,5 +247,3 @@ sudo docker rm $(sudo docker ps -aq)
 ```
 
 ---
-
-*Built with ❤️ utilizing modern full-stack AI methodologies.*
